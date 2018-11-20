@@ -18,6 +18,7 @@ const config = {
     devtool: 'source-map',
     output: {
         path: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
         filename: '[name].[hash].js'
     },
     module: {
@@ -57,6 +58,10 @@ const config = {
                 test: /\.json$/,
                 loader: 'json-loader'
             },
+        　　{
+    　　　　　　test: /\.(png|jpg)$/,
+    　　　　　　loader: 'url-loader?limit=8192&name=images/[hash:8].[name].[ext]'
+    　　　　  }
         ]
     },
     plugins: [],

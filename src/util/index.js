@@ -13,3 +13,48 @@ export const parseQueryString = (search = location && location.search) => {
   }
   return result
 }
+
+export const EventListener = {
+  listen(el, handlerBaseName, cb) {
+    if (el.addEventListener) {
+      el.addEventListener(handlerBaseName, cb, false);
+    } else if (el.attachEvent) {
+      el.attachEvent(`on${handlerBaseName}`, cb);
+    }
+  },
+
+  capture(el, handlerBaseName, cb) {
+    if (!el.addEventListener) {
+      console.error('You are attempting to use addEventlistener ' +
+            'in a browser that does not support it support it.' +
+            'This likely means that you will not receive events that ' +
+            'your application relies on (such as scroll).');
+      return;
+    }
+    el.addEventListener(handlerBaseName, cb, true);
+  },
+};
+
+export const push = (array, items) => {
+  if (items === null || items === undefined) return array
+  if (items instanceof Array) {
+    array.push(...items)
+  } else {
+    array.push(items)
+  }
+  return array
+}
+
+export const P1Keys = {
+  0x57: 'w',
+  0x53: 's',
+  0x41: 'a',
+  0x44: 'd',
+  0x00: 'z',
+  0x4A: 'A',
+  0x4B: 'B',
+  0x4C: 'C',
+  0xBA: 'D',
+};
+
+export const clone = (obj) => JSON.parse(JSON.stringify(obj))

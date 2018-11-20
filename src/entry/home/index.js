@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { parseQueryString } from 'UTIL'
+import App from './app'
 
-const query = parseQueryString()
 
-ReactDOM.render(<TimelinePage id={query.id} />, document.getElementById('root'))
+
+ReactDOM.render(<App />, document.getElementById('root'))

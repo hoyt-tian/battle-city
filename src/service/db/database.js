@@ -1,6 +1,6 @@
 import Table from './table';
 
-const getTabel = (tab, tabs) => {
+const getTabel = (table, tabs) => {
   const tab = tabs[table]
   if (tab) {
     return tab
@@ -21,9 +21,9 @@ class Database {
     return tab.insert(row)
   }
 
-  find(table, callback) {
+  query(table, callback) {
     const tab = getTabel(table, this.tables)
-    return tab.find(callback)
+    return tab.query(callback)
   }
 }
 

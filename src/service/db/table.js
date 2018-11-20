@@ -12,8 +12,8 @@ class Table {
     this.rows.push(r)
   }
 
-  find(callback) {
-    return this.rows.find(callback)
+  query(callback) {
+    return this.rows.filter(callback)
   }
 }
 
