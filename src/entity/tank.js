@@ -15,7 +15,6 @@ class Tank extends Item {
 
   effectHP(val) {
     this.hp += val
-    if (this.hp > 100) this.hp = 100
     if (this.hp <= 0) {
       this.boom = true
       return
@@ -25,6 +24,8 @@ class Tank extends Item {
       offset: val,
       val: this.hp,
     })
+    console.log('hp effect:')
+    console.log(h)
     db.insert('hp', h)
   }
 
@@ -74,7 +75,9 @@ class Tank extends Item {
             if (tank.recover) return
             setTimeout(() => {
               const now = Date.now()
-              const hps = db.query('hp', h => h.targetId === tank.id && h.gmtCreate - now < 5000)
+              const hps = db.query('hp', h => h.targetId === tank.id && (now - h.gmtCreate < 5000))
+              console.log(`find hps from ${now}`)
+              console.log(hps)
               hps.forEach(h => {
                 tank.effectHP(-h.offset)
               })
