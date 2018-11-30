@@ -3,7 +3,8 @@ import { clone } from 'UTIL'
 import Bullet from './bullet'
 import hp from './hp'
 import db from '../service/db'
-import { AIController } from '../entity/controller';
+import Boom from './boom'
+import { AIController } from './controller'
 
 class Tank extends Item {
   constructor(conf) {
@@ -11,6 +12,14 @@ class Tank extends Item {
     this.speed = conf.speed || 4
     this.hp = conf.hp || 100
     this.maxHp = this.hp
+    this.level = conf.level || 0
+  }
+
+  onDestory() {
+    if (this.controller instanceof AIController) {
+      this.controller.onDestory()
+    }
+    return new Boom({ x: this.x, y: this.y })
   }
 
   effectHP(val) {
@@ -24,32 +33,7 @@ class Tank extends Item {
       offset: val,
       val: this.hp,
     })
-    console.log('hp effect:')
-    console.log(h)
     db.insert('hp', h)
-  }
-
-  static createTanks(count = Math.ceil(Math.random() * 3)) {
-    const r = []
-    const pairs = [
-      {sx: 16 * 8, sy: 16 * 5, speed: 6, interval: 200, hp: 60 },
-      {sx: 16 * 8, sy: 16 * 7, hp: 100},
-      {sx: 16 * 0, sy: 16 * 7, hp: 100},
-      {sx: 16 * 8, sy: 16 * 8, hp: 40},
-      {sx: 0, sy: 16 * 8, hp: 40},
-      {sx: 0, sy: 16 * 5, speed: 6, interval: 200, hp: 60},
-    ]
-
-    for(let i = 0; i < count; i++) {
-      const p = pairs[Math.floor(Math.random() * pairs.length)]
-      r.push(new Tank({
-        ...p,
-        x: Math.random() * 100 + 100,
-        y: 100 + Math.random() * 200,
-        controller: new AIController({ interval: p.interval || 400 })
-      }))
-    }
-    return r
   }
 
   getItems() {
@@ -116,7 +100,6 @@ class Tank extends Item {
 
     if (this.boom === true) {
       this.deleted = true
-      return Tank.createTanks()
     }
   }
 

@@ -15,7 +15,7 @@ class Database {
       this.tables[t] = new Table(t)
     })
   }
-
+  
   insert(table, row) {
     const tab = getTabel(table, this.tables)
     return tab.insert(row)

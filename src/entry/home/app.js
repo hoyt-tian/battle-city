@@ -2,31 +2,45 @@ import React from 'react'
 import 'babel-polyfill'
 import Screen from '../../component/atom/screen'
 import Tank from '../../entity/tank'
+import Spark from '../../entity/spark'
 import Bullet from '../../entity/bullet'
 import { push } from 'UTIL'
 import { KeyboardController } from '../../entity/controller'
 import './app.less'
+import startup from './startup.ogg'
 
-class App extends React.Component {
+const bgm = new Audio()
+bgm.src = startup
+const statistics = {
+  frameCounter: 0,
+  lastCalc: window.performance.now(),
+  lastFrame: window.performance.now(),
+}
+class App extends React.PureComponent {
   constructor(props, context, updater) {
     super(props, context, updater)
 
     this.state = {
       width: 400,
       height: 300,
+      fps: null,
       items: [
         new Tank({
-          angle: 45,
+          angle: 0,
           speed: 4,
           y: 300 - 48 - 5,
           controller: new KeyboardController()
         }),
-        ...Tank.createTanks(2),
+        new Spark(),
+        new Spark(),
+        // ...Tank.createTanks(2),
       ],
       sprites: [],
       texts: [],
     }
     this.run = this.run.bind(this)
+
+    bgm.play()
   }
 
   blockDetect(items) {
@@ -66,6 +80,13 @@ class App extends React.Component {
       if (r) {
         push(created, r)
       }
+    })
+    items.filter(i => i.deleted).forEach(i => {
+      const { items = [] } = this.state
+      const r = i.onDestory({
+            items
+      })
+      if (r) push(created, r)
     })
     return remain.concat(created)
   }
@@ -113,20 +134,33 @@ class App extends React.Component {
     })
   }
 
-  run() {
+  run(timestamp) {
+    // console.info(`START\t\t${timestamp - statistics.lastFrame}`)
     const items = this.collectItems()
     const sprites = this.collectSprites(items)
     const texts = this.collectTexts(items)
     this.blockDetect(items)
     this.destoryItems()
-    this.setState({
+
+    const state = {
       items,
       sprites,
       texts,
-    }, () => {
+    }
+    statistics.frameCounter++
+    if (timestamp - statistics.lastCalc >= 1000) {
+      state.fps = statistics.frameCounter / (timestamp - statistics.lastCalc) * 1000
+      statistics.frameCounter = 0
+      statistics.lastCalc = timestamp
+    }
+    // console.info(`CALC\t\t${window.performance.now() - timestamp}`)
+    this.setState(state, () => {
       this.nextFrame(items)
+      // console.info(`FINI\t\t${window.performance.now() - timestamp}`)
+      // statistics.lastFrame = window.performance.now()
       requestAnimationFrame(this.run)
     })
+
   }
 
   componentDidMount() {
@@ -134,7 +168,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { sprites = [], texts = [], width = 400, height = 300 } = this.state
+    const { sprites = [], texts = [], width = 400, height = 300, fps } = this.state
     return <section className="app">
       <Screen sprites={sprites} texts={texts} width={width} height={height}/>
       <section>
@@ -144,6 +178,7 @@ class App extends React.Component {
         <p>影分身：K，分身状态下移动速度加倍，5秒后回到分身所在位置</p>
         <p>标记弹：L，被标记的单位将在5秒后回到标记位置</p>
         <p>恢复弹：;，被恢复弹标记的单位，5秒后hp回复至中弹状态时的hp，若单位已经死亡则无效</p>
+        <p>当前帧率：{fps && fps.toFixed(2)}</p>
       </section>
     </section>
   }

@@ -1,3 +1,5 @@
+import { merge } from 'UTIL'
+
 class Record {
   constructor({
     id,
@@ -10,7 +12,7 @@ class Record {
     this.gmtCreate = gmtCreate
     this.gmtUpdate = gmtUpdate
     this.deleted = deleted
-    Object.assign(this, rest)
+    merge(this, rest)
   }
 }
 
@@ -28,9 +30,8 @@ export const GeneratorFactory = seed => {
 export const RecordFactory = (generator = GeneratorFactory(0)) => {
   
   return (conf) => {
-    return new Record(Object.assign({}, conf, {
-      id: generator.next().value
-    }))
+    merge(conf, { id: generator.next().value })
+    return new Record(conf)
   }
 }
 

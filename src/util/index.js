@@ -58,3 +58,37 @@ export const P1Keys = {
 };
 
 export const clone = (obj) => JSON.parse(JSON.stringify(obj))
+
+export const merge = (target, source) => {
+  for ( let prop in source ) {
+    if ( Object.prototype.hasOwnProperty.call( source, prop ) ) {
+        target[prop] = source[prop]
+    }
+  }
+}
+
+export const assign = () => {
+  const extended = {}
+  let deep = false
+	let i = 0
+  let length = arguments.length
+  if ( Object.prototype.toString.call( arguments[0] ) === '[object Boolean]' ) {
+		deep = arguments[0]
+		i++
+  }
+  const merge = function (obj) {
+		for ( let prop in obj ) {
+			if ( Object.prototype.hasOwnProperty.call( obj, prop ) ) {
+				if ( deep && Object.prototype.toString.call(obj[prop]) === '[object Object]' ) {
+					extended[prop] = extend( true, extended[prop], obj[prop] )
+				} else {
+					extended[prop] = obj[prop]
+				}
+			}
+		}
+  }
+  for ( ; i < length; i++ ) {
+		merge(arguments[i])
+	}
+  return extended
+}

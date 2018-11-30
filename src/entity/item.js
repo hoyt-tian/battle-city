@@ -1,5 +1,5 @@
 import blob from './battle-city.png'
-
+import { merge } from 'UTIL'
 let id = 0
 class Item {
   constructor({
@@ -32,7 +32,7 @@ class Item {
     this.flipY = flipY
     this.controller = controller
     if (controller) controller.item = this
-    Object.assign(this, rest)
+    merge(this, rest)
   }
 
   getItems() {

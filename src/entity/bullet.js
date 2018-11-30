@@ -1,12 +1,18 @@
 import Item, { resource } from './item'
-import Tank from './tank';
+import Tank from './tank'
+import { merge } from 'UTIL'
+import binary from './shoot.ogg'
+
+const shoot = new Audio()
+shoot.src = binary
 
 class Bullet extends Item {
   constructor(conf) {
     const nconf = {
       damage: -10,
     }
-    Object.assign(nconf, conf, {
+    merge(nconf, conf)
+    merge(nconf, {
       sx: 20 * 16,
       sy: 16 * 6 + 4,
       sWidth: 8,
@@ -16,6 +22,7 @@ class Bullet extends Item {
     })
     super(nconf)
     this.onAttack = this.onAttack.bind(this)
+    shoot.play()
   }
 
   shoot(item) {

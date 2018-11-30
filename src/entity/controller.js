@@ -1,11 +1,11 @@
-import { EventListener, P1Keys } from 'UTIL'
+import { EventListener, P1Keys, merge } from 'UTIL'
 import movement from './movement'
 import db from '../service/db'
 
 class Controller {
 
   constructor(conf = {}) {
-    Object.assign(this, conf)
+    merge(this, conf)
     this.keyDown = this.keyDown.bind(this)
   }
 
@@ -87,14 +87,14 @@ class KeyboardController extends Controller {
 
 }
 
-const actions = ['w', 'w', 'w', 'a', 'a', 'd', 'd', 's', 'A']
+const actions = ['w', 'w', 'w', 'a', 'a', 'd', 'd', 's', 'A', 'B']
 
 class AIController extends Controller {
   constructor(conf) {
     super(conf)
     const { interval = 400 } = conf
     this.play = this.play.bind(this)
-    setInterval(this.play, interval)
+    this.interval = setInterval(this.play, interval)
   }
 
   play() {
@@ -102,6 +102,10 @@ class AIController extends Controller {
     if (item === null) return
     const val = Math.round(Math.random() * actions.length)
     this.keyDown(actions[val])
+  }
+
+  onDestory() {
+    clearInterval(this.interval)
   }
 }
 

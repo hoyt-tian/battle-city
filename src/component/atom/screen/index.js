@@ -1,4 +1,5 @@
 import React from 'react'
+import { merge } from 'UTIL'
 
 const compareObject = (a, b, keys = []) => {
   for(let i = 0; i < keys.length; i++) {
@@ -47,16 +48,17 @@ class Screen extends React.Component {
   drawSprites(ctx, sprites) {
     sprites.forEach(s => {
       ctx.save()
-      const { image, sx, sy, sWidth, sHeight, x, y, width, height, flipX, flipY, angle, ...rest } = s
-      Object.assign(ctx, rest)
+      const { image, sx, sy, sWidth, sHeight, x, y, width, height, flipX, flipY, angle, globalAlpha = 1, ...rest } = s
+      // merge(ctx, rest)
+      ctx.globalAlpha = globalAlpha
       ctx.drawImage(
         image,
         sx, 
         sy, 
         sWidth, 
         sHeight, 
-        flipX ? -x : x, 
-        flipY ? -y : y, 
+        x,
+        y,
         width, 
         height
       )
@@ -68,7 +70,7 @@ class Screen extends React.Component {
     texts.forEach(t => {
       ctx.save()
       const { content, x, y, ...rest } = t
-      Object.assign(ctx, rest)
+      merge(ctx, rest)
       ctx.fillText(content, x, y)
       ctx.restore()
     })
